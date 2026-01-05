@@ -116,9 +116,15 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
             </View>
 
             {/* Login with OTP */}
-            <TouchableOpacity
+            {/* <TouchableOpacity
               style={styles.otpButton}
               onPress={() => navigation.navigate("OTP")}
+            >
+              <Text style={styles.otpButtonText}>Login with OTP</Text>
+            </TouchableOpacity> */}
+            <TouchableOpacity
+              style={styles.otpButton}
+              onPress={() => alert("OTP login is available on mobile only")}
             >
               <Text style={styles.otpButtonText}>Login with OTP</Text>
             </TouchableOpacity>

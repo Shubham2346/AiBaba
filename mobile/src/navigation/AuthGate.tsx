@@ -1,32 +1,66 @@
-import { onAuthStateChanged } from "firebase/auth";
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { View, Text, ActivityIndicator } from "react-native";
+import { useEffect, useState } from "react";
+import { onAuthStateChanged, User } from "firebase/auth";
 import { auth } from "../services/firebase/firebaseConfig";
-import { setUser } from "../store/auth/authSlice";
-import AuthNavigation from "./AuthNavigator";
-import { View, ActivityIndicator } from "react-native";
-import { RootState } from "../store";
+import AuthNavigator from "./AuthNavigator";
+import AppNavigator from "./AppNavigator";
 
-const AppNavigator = () => {
-  const dispatch = useDispatch();
-  const { loading, user } = useSelector((state: RootState) => state.auth);
+export default function AuthGate() {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      dispatch(setUser(user));
+    const unsub = onAuthStateChanged(auth, currentUser => {
+      setUser(currentUser);
+      setLoading(false);
     });
-    return unsubscribe;
+    return unsub;
   }, []);
 
   if (loading) {
     return (
-      <View style={{ flex: 1, justifyContent: "center" }}>
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator size="large" />
+        <Text>Loading Auth...</Text>
       </View>
     );
   }
 
-  return user ? <MainApp /> : <AuthNavigation />;
-};
+  return user ? <AppNavigator /> : <AuthNavigator />;
+}
 
-export default AppNavigator;
+
+
+// import { View, Text, ActivityIndicator } from "react-native";
+// import { useEffect, useState } from "react";
+// import { onAuthStateChanged, User } from "firebase/auth";
+// import { auth } from "../services/firebase/firebaseConfig";
+// import AuthScreen from "../screens/auth/AuthScreen";
+
+// export default function AuthGate() {
+//   const [user, setUser] = useState<User | null>(null);
+//   const [loading, setLoading] = useState(true);
+
+//   useEffect(() => {
+//     const unsub = onAuthStateChanged(auth, currentUser => {
+//       setUser(currentUser);
+//       setLoading(false);
+//     });
+//     return unsub;
+//   }, []);
+
+//   if (loading) {
+//     return (
+//       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+//         <ActivityIndicator />
+//         <Text>Loading Auth...</Text>
+//       </View>
+//     );
+//   }
+
+//   return user ? (
+//     <Text>✅ Logged In</Text>
+//   ) : (
+//     <AuthScreen />
+//   );
+// }

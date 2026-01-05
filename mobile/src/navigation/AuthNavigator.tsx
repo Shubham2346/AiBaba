@@ -3,12 +3,12 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import LoginScreen from "../screens/auth/LoginScreen";
 import SignupScreen from "../screens/auth/SignupScreen";
-import OTPScreen from "../screens/auth/otpScreen";
+// import OTPScreen from "../screens/auth/otpScreen";
 
 export type AuthStackParamList = {
   Login: undefined;
   Signup: undefined;
-  OTP: { phoneNumber?: string };
+  // OTP: { phoneNumber?: string };
 };
 
 const Stack = createNativeStackNavigator<AuthStackParamList>();
@@ -36,11 +36,11 @@ const AuthNavigation = () => {
         options={{ gestureEnabled: true }}
       />
 
-      <Stack.Screen
+      {/* <Stack.Screen
         name="OTP"
         component={OTPScreen}
         options={{ gestureEnabled: true }}
-      />
+      /> */}
     </Stack.Navigator>
   );
 };
