@@ -1,18 +1,45 @@
+from app.db.mongodb import get_db
+from app.models.user import UserModel
 from datetime import datetime
-from app.db.mongodb import user_collection
 
-async def get_or_create_user(uid: str, email: str | None, phone: str | None):
-    user = await user_collection.find_one({"uid": uid})
+async def get_or_create_user(
+    firebase_uid: str,
+    email: str | None = None,
+    phone: str | None = None,
+    name: str | None = None,
+):
+    """
+    Fetch user by Firebase UID.
+    If not exists → create.
+    If exists → update missing fields.
+    """
 
-    if user:
-        return user
+    db = get_db()
+    users = db["users"]
 
-    new_user = {
-        "uid": uid,
+    update_data = {
         "email": email,
         "phone": phone,
-        "created_at": datetime.utcnow(),
+        "name": name,
+        "updated_at": datetime.utcnow(),
     }
 
-    await user_collection.insert_one(new_user)
-    return new_user
+
+    update_data = {k: v for k, v in update_data.items() if v is not None}
+
+    result = await users.find_one_and_update(
+        {"firebase_uid": firebase_uid},
+        {
+            "$setOnInsert": UserModel(
+                firebase_uid=firebase_uid,
+                email=email,
+                phone=phone,
+                name=name,
+            ).to_dict(),
+            "$set": update_data,
+        },
+        upsert=True,
+        return_document=True,
+    )
+
+    return result
